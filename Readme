@@ -1,0 +1,120 @@
+: "/,   "location": "eastus2",   "name": "
+"New-AzResourceGroup -Name 'myResourceGroup' -Location 'EastUS'
+New-AzVm `
+    -ResourceGroupName 'myResourceGroup' `
+    -Name 'myVM' `
+    -Location 'East US' `
+    -image Debian11 `
+    -size Standard_B2s `
+    -PublicIpAddressName myPubIP `
+    -OpenPorts 80 `
+    -GenerateSshKey `
+    -SshKeyName mySSHKey
+Private key is saved to /home/user/.ssh/1234567891
+Public key is saved to /home/user/.ssh/
+Invoke-AzVMRunCommand `
+   -ResourceGroupName 'myResourceGroup' `
+   -Name 'myVM' `
+   -CommandId 'RunShellScript' `
+   -ScriptString 'sudo apt-get update && sudo apt-get install -y nginx'
+Get-AzPublicIpAddress -Name myPubIP -ResourceGroupName myResourceGroup | select "IpAddress" 
+Remove-AzResourceGroup -Name 'myResourceGroup'
+export RANDOM_SUFFIX=$(openssl rand -hex 3)
+export REGION="eastus2"
+export MY_RESOURCE_GROUP_NAME="myResourceGroupVM$RANDOM_SUFFIX"
+az group create --name $MY_RESOURCE_GROUP_NAME --location $REGION
+Resultados:
+{
+  "id": "/subscriptions/xxxxx-xxxxx-xxxxx-xxxxx/resourceGroups/myResourceGroupVMxxx",
+  "location": "eastus2",
+  "name": "myResourceGroupVMxxx",
+  "properties": {
+    "provisioningState": "Succeeded"
+  }
+}
+export MY_VM_NAME="myVM$RANDOM_SUFFIX"
+az vm create \
+    --resource-group $MY_RESOURCE_GROUP_NAME \
+    --name $MY_VM_NAME \
+    --image SuseSles15SP5 \
+    --public-ip-sku Standard \
+    --admin-username azureuser \
+    --generate-ssh-keys
+{
+  "fqdns": "",
+  "id": "/subscriptions/xxxxx-xxxxx-xxxxx-xxxxx/resourceGroups/myResourceGroupVMxxx/providers/Microsoft.Compute/virtualMachines/myVMxxx",
+  "location": "eastus2",
+  "macAddress": "00-0D-3A-23-9A-49",
+  "powerState": "VM running",
+  "privateIpAddress": "10.0.0.4",
+  "publicIpAddress": "52.174.34.95",
+  "resourceGroup": "myResourceGroupVMxxx"
+}
+az vm image list --output table
+Architecture    Offer                         Publisher               Sku                                 Urn                                                                             UrnAlias                 Version
+--------------  ----------------------------  ----------------------  ----------------------------------  ------------------------------------------------------------------------------  -----------------------  ---------
+x64             debian-10                     Debian                  10                                  Debian:debian-10:10:latest                                                      Debian                   latest
+x64             flatcar-container-linux-free  kinvolk                 stable                              kinvolk:flatcar-container-linux-free:stable:latest                              Flatcar                  latest
+x64             opensuse-leap-15-3            SUSE                    gen2                                SUSE:opensuse-leap-15-3:gen2:latest                                             openSUSE-Leap            latest
+x64             RHEL                          RedHat                  7-LVM                               RedHat:RHEL:7-LVM:latest                                                        RHEL                     latest
+x64             sles-15-sp3                   SUSE                    gen2                                SUSE:sles-15-sp3:gen2:latest                                                    SLES                     latest
+x64             0001-com-ubuntu-server-jammy  Canonical               18.04-LTS                           Canonical:UbuntuServer:18.04-LTS:latest                                         UbuntuLTS                latest
+x64             WindowsServer                 MicrosoftWindowsServer  2022-Datacenter                     MicrosoftWindowsServer:WindowsServer:2022-Datacenter:latest                     Win2022Datacenter        latest
+x64             WindowsServer                 MicrosoftWindowsServer  2022-datacenter-azure-edition-core  MicrosoftWindowsServer:WindowsServer:2022-datacenter-azure-edition-core:latest  Win2022AzureEditionCore  latest
+x64             WindowsServer                 MicrosoftWindowsServer  2019-Datacenter                     MicrosoftWindowsServer:WindowsServer:2019-Datacenter:latest                     Win2019Datacenter        latest
+x64             WindowsServer                 MicrosoftWindowsServer  2016-Datacenter                     MicrosoftWindowsServer:WindowsServer:2016-Datacenter:latest                     Win2016Datacenter        latest
+x64             WindowsServer                 MicrosoftWindowsServer  2012-R2-Datacenter                  MicrosoftWindowsServer:WindowsServer:2012-R2-Datacenter:latest                  Win2012R2Datacenter      latest
+x64             WindowsServer                 MicrosoftWindowsServer  2012-Datacenter                     MicrosoftWindowsServer:WindowsServer:2012-Datacenter:latest                     Win2012Datacenter        latest
+x64             WindowsServer      
+az vm image list --offer 0001-com-          
+Architecture    Offer                              Publisher    Sku              Urn                                                                       Version
+--------------  ---------------------------------  -----------  ---------------  ------------------------------------------------------------------------  ---------------
+x64             0001-com-ubuntu-server-jammy       Canonical    22_04-lts        Canonical:0001-com-ubuntu-server-jammy:22_04-lts:22.04.202204200          22.04.202204200
+x64             0001-com-ubuntu-server-jammy       Canonical    22_04-lts        Canonical:0001-com-ubuntu-server-jammy:22_04-lts:22.04.202205060          22.04.202205060
+x64             0001-com-ubuntu-server-jammy       Canonical    22_04-lts        Canonical:0001-com-ubuntu-server-jammy:22_04-lts:22.04.202205280          22.04.202205280
+x64             0001-com-ubuntu-server-jammy       Canonical    22_04-lts        Canonical:0001-com-ubuntu-server-jammy:22_04-lts:22.04.202206040          22.04.202206040
+x64             0001-com-ubuntu-server-jammy       Canonical    22_04-lts        Canonical:0001-com-ubuntu-server-jammy:22_04-lts:22.04.202206090          22.04.202206090
+x64             0001-com-ubuntu-server-jammy       Canonical    22_04-lts        Canonical:0001-com-ubuntu-server-jammy:22_04-lts:22.04.202206160          22.04.202206160
+x64             0001-com-ubuntu-server-jammy       Canonical    22_04-lts        Canonical:0001-com-ubuntu-server-jammy:22_04-lts:22.04.202206220          22.04.202206220
+x64             0001-com-ubuntu-server-jammy       Canonical    22_04-lts        Canonical:0001-com-ubuntu-server-jammy:22_04-lts:22.04.202207060          22.04.202207060 
+export MY_VM2_NAME="myVM2$RANDOM_SUFFIX"
+az vm create --resource-group $MY_RESOURCE_GROUP_NAME --name $MY_VM2_NAME --image Canonical:0001-com-ubuntu-server-jammy:22_04-lts:latest --generate-ssh-keys
+az vm list-sizes --location $REGION --output table
+MaxDataDiskCount    MemoryInMb  Name                      NumberOfCores    OsDiskSizeInMb    ResourceDiskSizeInMb
+------------------  ------------  ----------------------  ---------------  ----------------  ----------------------
+4                   8192          Standard_D2ds_v4           2                1047552           76800
+8                   16384         Standard_D4ds_v4           4                1047552           153600
+16                  32768         Standard_D8ds_v4           8                1047552           307200
+32                  65536         Standard_D16ds_v4          16               1047552           614400
+32                  131072        Standard_D32ds_v4          32               1047552           1228800
+32                  196608        Standard_D48ds_v4          48               1047552           1843200
+32                  262144        Standard_D64ds_v4          64               1047552           2457600
+4                   8192          Standard_D2ds_v5           2                1047552           76800
+8                   16384         Standard_D4ds_v5           4                1047552           153600
+16                  32768         Standard_D8ds_v5           8                1047552           307200
+32                  65536         Standard_D16ds_v5          16               1047552           614400
+32                  131072        Standard_D32ds_v5          32               1047552           1228800
+32                  196608        Standard_D48ds_v5          48               1047552           1843200
+32                  262144        Standard_D64ds_v5          64               1047552           2457600
+32                  393216        Standard_D96ds_v5
+export MY_VM3_NAME="myVM3$RANDOM_SUFFIX"
+az vm create \
+    --resource-group $MY_RESOURCE_GROUP_NAME \
+    --name $MY_VM3_NAME \
+    --image SuseSles15SP5 \
+    --size Standard_D2ds_v4  \
+    --generate-ssh-keys
+az vm show --resource-group $MY_RESOURCE_GROUP_NAME --name $MY_VM_NAME --query hardwareProfile.vmSize
+az vm list-vm-resize-options --resource-group $MY_RESOURCE_GROUP_NAME --name $MY_VM_NAME --query [].name
+az vm resize --resource-group $MY_RESOURCE_GROUP_NAME --name $MY_VM_NAME --size Standard_D4s_v3
+az vm start --resource-group $MY_RESOURCE_GROUP_NAME --name $MY_VM_NAME
+az vm get-instance-view \
+    --name $MY_VM_NAME \
+    --resource-group $MY_RESOURCE_GROUP_NAME \
+    --query instanceView.statuses[1] --output table
+Code                Level    DisplayStatus
+------------------  -------  ---------------
+PowerState/running  Info     VM running
+az vm list-ip-addresses --resource-group $MY_RESOURCE_GROUP_NAME --name $MY_VM_NAME --output table
+az vm stop --resource-group $MY_RESOURCE_GROUP_NAME --name $MY_VM_NAME
+az vm start --resource-group $MY_RESOURCE_GROUP_NAME --name $MY_VM_NAME
